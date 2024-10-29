@@ -1,0 +1,48 @@
+{
+    "certificate_of_origin": {
+      "exporter": {
+        "name": "",
+        "address": "",
+        "phone": ""
+      },
+      "blanket_period": {
+        "from": "",
+        "to": ""
+      },
+      "producer": {
+        "name": "",
+        "address": "",
+        "phone": "",
+        "fax": ""
+      },
+      "importer": {
+        "name": "",
+        "address": "",
+        "phone": "",
+        "fax": ""
+      },
+      "goods": [
+        {
+          "description": "",
+          "hs_tariff_classification": "",
+          "preference_criterion": "",
+          "producer": "",
+          "value_test": "",
+          "country_of_origin": ""
+        }
+      ],
+      "reference_number": "",
+      "observations": "",
+      "certification": {
+        "authorized_signature": {
+          "name": "",
+          "title": "",
+          "date": ""
+        },
+        "company": "",
+        "telephone": "",
+        "email": ""
+      }
+    }
+  }
+  

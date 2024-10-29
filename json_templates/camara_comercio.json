@@ -1,0 +1,53 @@
+{
+  "Camara_de_Comercio": {
+    "company_name": "",
+    "NIT": {
+      "number": "",
+      "DV": ""
+    },
+    "registration": {
+      "number": "",
+      "registration_date": "",
+      "last_renewed_year": "",
+      "renewal_date": ""
+    },
+    "address": {
+      "street": "",
+      "city": "",
+      "department": "",
+      "country": "",
+      "email": "",
+      "phone": ""
+    },
+    "legal_representative": {
+      "name": "",
+      "identification_number": "",
+      "position": "",
+      "appointment_date": ""
+    },
+    "substitute_legal_representative": {
+      "name": "",
+      "identification_number": "",
+      "appointment_date": ""
+    },
+    "fiscal_auditor": {
+      "name": "",
+      "identification_number": "",
+      "appointment_date": ""
+    },
+    "economic_activities": [
+      {
+        "code": "",
+        "description": ""
+      },
+      {
+        "code": "",
+        "description": ""
+      }
+    ],
+    "document_issue_date": "",
+    "verification_code": ""
+  }
+}
+
+  

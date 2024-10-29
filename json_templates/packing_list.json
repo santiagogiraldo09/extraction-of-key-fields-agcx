@@ -1,0 +1,73 @@
+{
+    "packing_list": {
+      "exporter": {
+        "name": "",
+        "address": "",
+        "phone": "",
+        "fax": ""
+      },
+      "invoice_details": {
+        "export_invoice_number": "",
+        "date": "",
+        "bill_of_lading_number": "",
+        "buyer_reference": "",
+        "reference": ""
+      },
+      "consignee": {
+        "name": "",
+        "address": "",
+        "phone": "",
+        "fax": ""
+      },
+      "buyer": {
+        "name": "",
+        "address": "",
+        "phone": "",
+        "fax": ""
+      },
+      "shipment_details": {
+        "method_of_dispatch": "",
+        "type_of_shipment": "",
+        "country_of_origin": "",
+        "country_of_final_destination": "",
+        "vessel_aircraft": "",
+        "voyage_number": "",
+        "port_of_loading": "",
+        "date_of_departure": "",
+        "port_of_discharge": "",
+        "final_destination": "",
+        "container_details": {
+          "container_number": "",
+          "container_type": "",
+          "tare_weight_kg": "",
+          "seal_number": ""
+        }
+      },
+      "packing_information": [
+        {
+          "product_code": "",
+          "description_of_goods": "",
+          "unit_quantity": "",
+          "kind_and_no_of_packages": "",
+          "net_weight_kg": "",
+          "gross_weight_kg": "",
+          "measurements_m3": ""
+        }
+      ],
+      "totals": {
+        "total_net_weight_kg": "",
+        "total_gross_weight_kg": "",
+        "total_measurements_m3": ""
+      },
+      "additional_info": {
+        "cnpj": "",
+        "shipping_company": ""
+      },
+      "signatory": {
+        "company": "",
+        "name_of_authorized_signatory": "",
+        "signature": ""
+      }
+    }
+  }
+  

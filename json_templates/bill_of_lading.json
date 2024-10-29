@@ -1,0 +1,116 @@
+{
+  "bill_of_lading_number": "",
+  "shipper": {
+      "name": "",
+      "address": "",
+      "phone": "",
+      "fax": ""
+  },
+  "consignee": {
+      "name": "",
+      "address": "",
+      "phone": "",
+      "fax": ""
+  },
+  "notify_parties": [
+      {
+          "name": "",
+          "address": "",
+          "phone": "",
+          "email": ""
+      }
+  ],
+  "carrier": {
+      "name": "",
+      "address": "",
+      "agent": {
+          "name": "",
+          "address": "",
+          "city": "",
+          "country": "",
+          "phone": "",
+          "fax": ""
+      }
+  },
+  "vessel": {
+      "name": "",
+      "voyage_number": "",
+      "imo_number": ""
+  },
+  "transport_details": {
+      "place_of_receipt": "",
+      "port_of_loading": "",
+      "port_of_discharge": "",
+      "place_of_delivery": "",
+      "shipment_type": "",
+      "incoterms": ""
+  },
+  "container_details": [
+      {
+          "container_number": "",
+          "size_type": "",
+          "seal_number": "",
+          "tare_weight_kg": "",
+          "gross_weight_kg": "",
+          "net_weight_kg": "",
+          "cargo_weight_kg": "",
+          "measurement_cbm": "",
+          "description": ""
+      }
+  ],
+  "goods": [
+      {
+          "description": "",
+          "hs_code": "",
+          "quantity": "",
+          "unit": "",
+          "packaging_type": "",
+          "weight_kg": "",
+          "measurement_cbm": ""
+      }
+  ],
+  "freight_charges": {
+      "freight_type": "",
+      "basis": "",
+      "declared_value": "",
+      "rate": "",
+      "prepaid": "",
+      "collect": ""
+  },
+  "insurance_details": {
+      "insured_value": "",
+      "insurance_company": "",
+      "policy_number": ""
+  },
+  "issue_details": {
+      "place_of_issue": "",
+      "date_of_issue": "",
+      "shipped_on_board_date": "",
+      "signed_by": ""
+  },
+  "storage_and_demurrage": {
+      "storage_charges": "",
+      "container_demurrage": ""
+  },
+  "electronic_release_system": {
+      "ers_note": ""
+  },
+  "non_negotiable_copy": {
+      "sequence_number": "",
+      "scac_code": ""
+  },
+  "related_documents": [
+      {
+          "document_type": "",
+          "document_number": ""
+      }
+  ],
+  "cargo_status": "",
+  "total_weight": "",
+  "total_number_of_containers": "",
+  "discharge_port_agent": {
+      "name": "",
+      "address": "",
+      "phone": ""
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "RUT": {
+    "company_name": "",
+    "NIT": {
+      "number": "",
+      "DV": ""
+    },
+    "address": {
+      "primary": {
+        "street": "",
+        "city": "",
+        "department": "",
+        "country": "",
+        "postal_code": ""
+      },
+      "secondary": "",
+      "email": "",
+      "phone_1": "",
+      "phone_2": ""
+    },
+    "economic_activities": [
+      {
+        "activity_code": "",
+        "description": ""
+      },
+      {
+        "activity_code": "",
+        "description": ""
+      }
+    ],
+    "legal_representative": {
+      "name": "",
+      "identification_number": "",
+      "position": "",
+      "email": ""
+    },
+    "responsibilities": [
+      "",
+      ""
+    ],
+    "document_issue_date": "",
+    "document_generation_time": ""
+  }
+}

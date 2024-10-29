@@ -1,0 +1,13 @@
+streamlit
+pandas
+openpyxl
+azure-core
+azure-ai-formrecognizer
+requests
+python-dotenv
+geopy
+asyncio
+azure-cognitiveservices-vision-computervision
+msrest
+openai
+pillow
