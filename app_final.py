@@ -6,12 +6,7 @@ from azure.cognitiveservices.vision.computervision.models import OperationStatus
 from msrest.authentication import CognitiveServicesCredentials
 from openai import AzureOpenAI
 import os
-import requests
-import math
 import re
-from geopy.distance import geodesic
-from io import BytesIO
-from PIL import Image
 from datetime import datetime
 
 # Configurar las credenciales de Azure
@@ -550,32 +545,32 @@ uploaded_invoice = st.file_uploader("Sube tu archivo de Factura (PDF)", type=["p
 st.header("Cargar Lista de Empaque")
 uploaded_packing_list = st.file_uploader("Sube tu archivo de Lista de Empaque (PDF)", type=["pdf"], key="packing_list")
 
-    # Botón para iniciar la extracción y procesamiento de OCR
-    if st.button("Iniciar procesamiento de OCR"):
-        json_data = {}
+# Botón para iniciar la extracción y procesamiento de OCR
+if st.button("Iniciar procesamiento de OCR"):
+    json_data = {}
 
-        # Procesar cada archivo si fue subido
-        process_document(uploaded_bl, "Bill of Lading", json_data)
-        process_document(uploaded_co, "Certificado de Origen", json_data)
-        process_document(uploaded_invoice, "Factura", json_data)
-        process_document(uploaded_packing_list, "Lista de Empaque", json_data)
+    # Procesar cada archivo si fue subido
+    process_document(uploaded_bl, "Bill of Lading", json_data)
+    process_document(uploaded_co, "Certificado de Origen", json_data)
+    process_document(uploaded_invoice, "Factura", json_data)
+    process_document(uploaded_packing_list, "Lista de Empaque", json_data)
 
-        # Mostrar los resultados de los documentos procesados
-        if json_data:
-            st.write("Datos JSON extraídos de los documentos:")
-            display_extracted_data(json_data)
-            # Mostrar el JSON completo
-            st.subheader("JSON completo generado:")
-            json_str = json.dumps(json_data, indent=4)
-            st.text_area("JSON Generado:", json_str, height=300)
+    # Mostrar los resultados de los documentos procesados
+    if json_data:
+        st.write("Datos JSON extraídos de los documentos:")
+        display_extracted_data(json_data)
+        # Mostrar el JSON completo
+        st.subheader("JSON completo generado:")
+        json_str = json.dumps(json_data, indent=4)
+        st.text_area("JSON Generado:", json_str, height=300)
 
-            # Botón para descargar el JSON generado
-            st.download_button(
-                label="Descargar JSON",
-                data=json_str,
-                file_name="documentos_procesados.json",
-                mime="application/json"
-            )
-        else:
-            st.warning("No se extrajeron datos de los documentos.")
+        # Botón para descargar el JSON generado
+        st.download_button(
+            label="Descargar JSON",
+            data=json_str,
+            file_name="documentos_procesados.json",
+            mime="application/json"
+        )
+    else:
+        st.warning("No se extrajeron datos de los documentos.")
             
