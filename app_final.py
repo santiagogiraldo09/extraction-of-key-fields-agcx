@@ -20,13 +20,13 @@ AZURE_KEY = "e44dceb20f40469291dd107c2689e556"  # Cambia por tu API Key real
 AZURE_OPENAI_ENDPOINT = "https://iac-demo-aduanas.openai.azure.com/"  # Coloca tu endpoint de Azure OpenAI
 AZURE_OPENAI_KEY = "e68adbe619e241f7bb9c9d25389743d2"  # Coloca tu clave de Azure OpenAI
 # URL de la API de Static Maps
-STATIC_MAP_URL = "https://maps.googleapis.com/maps/api/staticmap"
-PLACES_API_URL = "https://maps.googleapis.com/maps/api/place/nearbysearch/json"
+#STATIC_MAP_URL = "https://maps.googleapis.com/maps/api/staticmap"
+#PLACES_API_URL = "https://maps.googleapis.com/maps/api/place/nearbysearch/json"
 
 #Configurar credenciales Google Geocoding
-GOOGLE_API_KEY = "AIzaSyAup1kQpy0W1gyaWOY2IoUl9VAHP_7pxYI"
+#GOOGLE_API_KEY = "AIzaSyAup1kQpy0W1gyaWOY2IoUl9VAHP_7pxYI"
 # URL de la API de Geocoding
-GEOCODING_URL = "https://maps.googleapis.com/maps/api/geocode/json"
+#GEOCODING_URL = "https://maps.googleapis.com/maps/api/geocode/json"
 
 # Configurar cliente de Azure Computer Vision
 cv_client = ComputerVisionClient(AZURE_ENDPOINT, CognitiveServicesCredentials(AZURE_KEY))
@@ -39,12 +39,12 @@ openai_client = AzureOpenAI(
 )
 
 # Función para normalizar la dirección
-def clean_and_normalize_address(address):
-    address = re.sub(r'\b(OFICINA|OF|Ofi|OFI|APT|APARTAMENTO|PISO|DEPTO|INTERIOR)\b\s*\d*', '', address, flags=re.IGNORECASE)
-    address = re.sub(r'\b(CRA|CRR|CR|CARR)\b', 'Carrera', address, flags=re.IGNORECASE)
-    address = re.sub(r'\b(CLL|CL|CALLE)\b', 'Calle', address, flags=re.IGNORECASE)
-    address = re.sub(r'\b(DG|DIAG|DIAGONAL)\b', 'Diagonal', address, flags=re.IGNORECASE)
-    return address.strip()
+#def clean_and_normalize_address(address):
+    #address = re.sub(r'\b(OFICINA|OF|Ofi|OFI|APT|APARTAMENTO|PISO|DEPTO|INTERIOR)\b\s*\d*', '', address, flags=re.IGNORECASE)
+    #address = re.sub(r'\b(CRA|CRR|CR|CARR)\b', 'Carrera', address, flags=re.IGNORECASE)
+    #address = re.sub(r'\b(CLL|CL|CALLE)\b', 'Calle', address, flags=re.IGNORECASE)
+    #address = re.sub(r'\b(DG|DIAG|DIAGONAL)\b', 'Diagonal', address, flags=re.IGNORECASE)
+    #return address.strip()
 
 def normalizar_fecha(fecha_str):
     """
@@ -86,80 +86,80 @@ def comparar_fechas(fecha_factura, fecha_empaque):
     else:
         return "Una o ambas fechas son inválidas."
 
-def obtener_imagen_mapa(latitud, longitud):
-    params = {
-        'center': f"{latitud},{longitud}",
-        'zoom': 17,
-        'size': "600x300",
-        'markers': f"color:red|label:A|{latitud},{longitud}",
-        'maptype': 'satellite',
-        'key': GOOGLE_API_KEY
-    }
-    respuesta = requests.get(STATIC_MAP_URL, params=params)
-    return Image.open(BytesIO(respuesta.content))
+#def obtener_imagen_mapa(latitud, longitud):
+    #params = {
+        #'center': f"{latitud},{longitud}",
+        #'zoom': 17,
+        #'size': "600x300",
+        #'markers': f"color:red|label:A|{latitud},{longitud}",
+        #'maptype': 'satellite',
+        #'key': GOOGLE_API_KEY
+    #}
+    #respuesta = requests.get(STATIC_MAP_URL, params=params)
+    #return Image.open(BytesIO(respuesta.content))
 
 # Función para obtener lugares cercanos con Google Places
-def obtener_lugares_cercanos(latitud, longitud, tipo, radio=50):
-    params = {
-        'location': f"{latitud},{longitud}",
-        'radius': radio,  # Radio de búsqueda en metros
-        'type': tipo,
-        'key': GOOGLE_API_KEY
-    }
-    respuesta = requests.get(PLACES_API_URL, params=params)
-    if respuesta.status_code == 200:
-        datos = respuesta.json()
-        return datos.get('results', [])
-    return []
+#def obtener_lugares_cercanos(latitud, longitud, tipo, radio=50):
+    #params = {
+        #'location': f"{latitud},{longitud}",
+        #'radius': radio,  # Radio de búsqueda en metros
+        #'type': tipo,
+        #'key': GOOGLE_API_KEY
+    #}
+    #respuesta = requests.get(PLACES_API_URL, params=params)
+    #if respuesta.status_code == 200:
+        #datos = respuesta.json()
+        #return datos.get('results', [])
+    #return []
 
 # Función para categorizar la zona
-def categorizar_zona(latitud, longitud):
-    tipos = {
-        "residencial": "neighborhood",
-        "portuaria": "point_of_interest|establishment",
-        "bodegas": "storage"
-    }
-    radio_busqueda = 201  # Radio en metros
-    lugares_residenciales = obtener_lugares_cercanos(latitud, longitud, tipos['residencial'], radio_busqueda)
-    lugares_portuarios = obtener_lugares_cercanos(latitud, longitud, tipos['portuaria'], radio_busqueda)
-    lugares_bodegas = obtener_lugares_cercanos(latitud, longitud, tipos['bodegas'], radio_busqueda)
+#def categorizar_zona(latitud, longitud):
+    #tipos = {
+        #"residencial": "neighborhood",
+        #"portuaria": "point_of_interest|establishment",
+        #"bodegas": "storage"
+    #}
+    #radio_busqueda = 201  # Radio en metros
+    #lugares_residenciales = obtener_lugares_cercanos(latitud, longitud, tipos['residencial'], radio_busqueda)
+    #lugares_portuarios = obtener_lugares_cercanos(latitud, longitud, tipos['portuaria'], radio_busqueda)
+    #lugares_bodegas = obtener_lugares_cercanos(latitud, longitud, tipos['bodegas'], radio_busqueda)
 
-    if lugares_residenciales:
-        return "Zona residencial"
-    elif lugares_portuarios:
-        return "Zona portuaria"
-    elif lugares_bodegas:
-        return "Zona de bodegas"
-    else:
-        return "Zona desconocida"
+    #if lugares_residenciales:
+        #return "Zona residencial"
+    #elif lugares_portuarios:
+        #return "Zona portuaria"
+    #elif lugares_bodegas:
+        #return "Zona de bodegas"
+    #else:
+        #return "Zona desconocida"
 
-def obtener_coordenadas(address):
-    """Obtener las coordenadas de una dirección utilizando la API de Google Geocoding."""
-    params = {
-        'address': address,
-        'key': GOOGLE_API_KEY
-    }
-    respuesta = requests.get(GEOCODING_URL, params=params)
+#def obtener_coordenadas(address):
+    #"""Obtener las coordenadas de una dirección utilizando la API de Google Geocoding."""
+    #params = {
+        #'address': address,
+        #'key': GOOGLE_API_KEY
+    #}
+    #respuesta = requests.get(GEOCODING_URL, params=params)
     
-    if respuesta.status_code == 200:
-        datos = respuesta.json()
-        if datos['status'] == 'OK':
-            ubicacion = datos['results'][0]['geometry']['location']
-            return ubicacion['lat'], ubicacion['lng']
-        else:
-            st.error(f"No se pudo obtener la ubicación de la dirección: {address}")
-            return None, None
-    else:
-        st.error("Error al conectarse a la API de Google Geocoding")
-        return None, None
+    #if respuesta.status_code == 200:
+        #datos = respuesta.json()
+        #if datos['status'] == 'OK':
+            #ubicacion = datos['results'][0]['geometry']['location']
+            #return ubicacion['lat'], ubicacion['lng']
+        #else:
+            #st.error(f"No se pudo obtener la ubicación de la dirección: {address}")
+            #return None, None
+    #else:
+        #st.error("Error al conectarse a la API de Google Geocoding")
+        #return None, None
     
 # Función para comparar coordenadas con un umbral de distancia
-def comparar_coordenadas(coord1, coord2, umbral_metros=50):
-    if None in coord1 or None in coord2:
-        return False
-    distancia = geodesic(coord1, coord2).meters
-    st.write(f"Distancia calculada entre coordenadas: {distancia} metros")  # Mostrar la distancia calculada
-    return distancia <= umbral_metros
+#def comparar_coordenadas(coord1, coord2, umbral_metros=50):
+    #if None in coord1 or None in coord2:
+        #return False
+    #distancia = geodesic(coord1, coord2).meters
+    #st.write(f"Distancia calculada entre coordenadas: {distancia} metros")  # Mostrar la distancia calculada
+    #return distancia <= umbral_metros
 
 # Función para extraer texto de PDF usando OCR de Azure
 async def ocr_with_azure(file_stream, client):
@@ -388,26 +388,26 @@ def display_extracted_data(json_data):
             st.error("Ninguno de los campos coincide")
     
     # Si ambas direcciones existen, proceder con la geocodificación y comparación
-    if streetRUT and streetCC:
+    #if streetRUT and streetCC:
         # Normalizar direcciones
-        direccion_rut_normalizada = clean_and_normalize_address(streetRUT)
-        direccion_cc_normalizada = clean_and_normalize_address(streetCC)
+        #direccion_rut_normalizada = clean_and_normalize_address(streetRUT)
+        #direccion_cc_normalizada = clean_and_normalize_address(streetCC)
         #Obtener coordenadas
-        coordenadas_rut = obtener_coordenadas(direccion_rut_normalizada)
-        coordenadas_cc = obtener_coordenadas(direccion_cc_normalizada)
+        #coordenadas_rut = obtener_coordenadas(direccion_rut_normalizada)
+        #coordenadas_cc = obtener_coordenadas(direccion_cc_normalizada)
         #Mostrar coordenadas en pantalla
-        st.write(f"Coordenadas de la dirección RUT: {coordenadas_rut}")
-        st.write(f"Coordenadas de la dirección relacionada con la Cámara de Comercio: {coordenadas_cc}")
-        if coordenadas_rut and coordenadas_cc:
-            if comparar_coordenadas(coordenadas_rut, coordenadas_cc, umbral_metros=50):
-                st.success("Las direcciones están dentro del margen establecido.")
-            else:
-                st.error("Las direcciones están a más de 50 metros de distancia.")
-        else:
-            st.error("No se pudo obtener las coordenadas de una o ambas direcciones.")
+        #st.write(f"Coordenadas de la dirección RUT: {coordenadas_rut}")
+        #st.write(f"Coordenadas de la dirección relacionada con la Cámara de Comercio: {coordenadas_cc}")
+        #if coordenadas_rut and coordenadas_cc:
+            #if comparar_coordenadas(coordenadas_rut, coordenadas_cc, umbral_metros=50):
+                #st.success("Las direcciones están dentro del margen establecido.")
+            #else:
+                #st.error("Las direcciones están a más de 50 metros de distancia.")
+        #else:
+            #st.error("No se pudo obtener las coordenadas de una o ambas direcciones.")
             
         #Almacenar la dirección normalizada
-        st.session_state.direccion_rut_normalizada = direccion_rut_normalizada
+        #st.session_state.direccion_rut_normalizada = direccion_rut_normalizada
     
 # Función para procesar los documentos (OCR y conversión a JSON)
 def process_document(uploaded_file, document_type, json_data):
@@ -465,92 +465,90 @@ def get_json_template(document_type):
 st.title("Comparación de Documentos - Aduanas")
 
 # Usar Radio Buttons para opciones
-selected_option = st.radio(
-    "Selecciona una opción:",
-    ("Comparación y categorización de direcciones", "Comparación de Documentos")
-)
+#selected_option = st.radio(
+    #"Selecciona una opción:",
+    #("Comparación y categorización de direcciones", "Comparación de Documentos")
+#)
 
 # Si se selecciona "Comparación de Documentos", mostrar campos para cargar documentos
-if selected_option == "Comparación y categorización de direcciones":
+#if selected_option == "Comparación y categorización de direcciones":
     #Carga de RUT
-    st.header("Cargar RUT")
-    uploaded_rut = st.file_uploader("Sube tu archivo de RUT (PDF)", type=["pdf"], key="rut")
+    #st.header("Cargar RUT")
+    #uploaded_rut = st.file_uploader("Sube tu archivo de RUT (PDF)", type=["pdf"], key="rut")
     
     # Carga de Cámara de Comercio
-    st.header("Cargar Cámara de Comercio")
-    uploaded_cc = st.file_uploader("Sube tu archivo de Cámara de comercio (PDF)", type=["pdf"], key="cc")
+    #st.header("Cargar Cámara de Comercio")
+    #uploaded_cc = st.file_uploader("Sube tu archivo de Cámara de comercio (PDF)", type=["pdf"], key="cc")
     
     # Carga de Cotización
     #st.header("Cargar Cotización")
     #uploaded_cot = st.file_uploader("Sube tu archivo de Cotización (PDF)", type=["pdf"], key="cot")
     
     # Botón para iniciar la extracción y procesamiento de OCR
-    if st.button("Iniciar Comparación"):
-        json_data = {}
+    #if st.button("Iniciar Comparación"):
+        #json_data = {}
         
         # Procesar el archivo RUT si fue subido
-        if uploaded_rut:
-            process_document(uploaded_rut, "RUT", json_data)
+        #if uploaded_rut:
+            #process_document(uploaded_rut, "RUT", json_data)
         
         # Procesar el archivo de Cámara de Comercio si fue subido
-        if uploaded_cc:
-            process_document(uploaded_cc, "Cámara de Comercio", json_data)
+        #if uploaded_cc:
+            #process_document(uploaded_cc, "Cámara de Comercio", json_data)
         
         # Procesar el archivo de Cotización si fue subido
         #if uploaded_cot:
             #process_document(uploaded_cot, "Cotización", json_data)
         
-        # Mostrar los resultados de los documentos procesados
-        if json_data:
-            st.write("Datos JSON extraídos de los documentos:")
-            display_extracted_data(json_data)
-            
-            
-        else:
-            st.warning("No se extrajeron datos de los documentos.")
+# Mostrar los resultados de los documentos procesados
+##if json_data:
+    ##st.write("Datos JSON extraídos de los documentos:")
+    ##display_extracted_data(json_data)
+##else:
+    ##st.warning("No se extrajeron datos de los documentos.")
         
     #Si las direcciones ya han sido extraidas y guardadas en session_state
-    if "direccion_rut_normalizada" in st.session_state:
-        st.subheader("Categorizar Dirección")
+    #if "direccion_rut_normalizada" in st.session_state:
+        #st.subheader("Categorizar Dirección")
         
         # Mostrar la dirección extraída y permitir editarla
-        direccion_editada = st.text_input("Edita la dirección para categorizar", value=st.session_state.direccion_rut_normalizada)
+        #direccion_editada = st.text_input("Edita la dirección para categorizar", value=st.session_state.direccion_rut_normalizada)
     
         # Botón para confirmar la categorización
-        if st.button("Categorizar Dirección"):
-            direccion_editada_normalizada = clean_and_normalize_address(direccion_editada)
+        #if st.button("Categorizar Dirección"):
+            #direccion_editada_normalizada = clean_and_normalize_address(direccion_editada)
     
             # Obtener coordenadas
-            lat_rut, lng_rut = obtener_coordenadas(direccion_editada_normalizada)
-            if lat_rut and lng_rut:
-                st.write(f"Coordenadas: {lat_rut}, {lng_rut}")
+            #lat_rut, lng_rut = obtener_coordenadas(direccion_editada_normalizada)
+            #if lat_rut and lng_rut:
+                #st.write(f"Coordenadas: {lat_rut}, {lng_rut}")
     
                 # Obtener imagen del mapa
-                imagen_mapa = obtener_imagen_mapa(lat_rut, lng_rut)
-                st.image(imagen_mapa, caption="Vista de la ubicación RUT", use_column_width=True)
+                #imagen_mapa = obtener_imagen_mapa(lat_rut, lng_rut)
+                #st.image(imagen_mapa, caption="Vista de la ubicación RUT", use_column_width=True)
     
                 # Categorizar la zona
-                categoria = categorizar_zona(lat_rut, lng_rut)
-                st.write(f"Categoría de la zona: {categoria}")
-            else:
-                st.error("No se pudieron obtener las coordenadas de la dirección.")
+                #categoria = categorizar_zona(lat_rut, lng_rut)
+                #st.write(f"Categoría de la zona: {categoria}")
+            #else:
+                #st.error("No se pudieron obtener las coordenadas de la dirección.")
     
-elif selected_option == "Comparación de Documentos":
-    # Carga de Bill of Lading
-    st.header("Cargar Bill of Lading")
-    uploaded_bl = st.file_uploader("Sube tu archivo de Bill of Lading (PDF)", type=["pdf"], key="bl")
+#elif selected_option == "Comparación de Documentos":
+# Carga de Bill of Lading
+st.header("Cargar Bill of Lading")
+uploaded_bl = st.file_uploader("Sube tu archivo de Bill of Lading (PDF)", type=["pdf"], key="bl")
 
-    # Carga de Certificado de Origen
-    st.header("Cargar Certificado de Origen")
-    uploaded_co = st.file_uploader("Sube tu archivo de Certificado de Origen (PDF)", type=["pdf"], key="co")
+# Carga de Certificado de Origen
+st.header("Cargar Certificado de Origen")
+uploaded_co = st.file_uploader("Sube tu archivo de Certificado de Origen (PDF)", type=["pdf"], key="co")
 
-    # Carga de Factura (Commercial Invoice)
-    st.header("Cargar Factura")
-    uploaded_invoice = st.file_uploader("Sube tu archivo de Factura (PDF)", type=["pdf"], key="invoice")
+# Carga de Factura (Commercial Invoice)
+st.header("Cargar Factura")
+uploaded_invoice = st.file_uploader("Sube tu archivo de Factura (PDF)", type=["pdf"], key="invoice")
 
-    # Carga de Lista de Empaque (Packing List)
-    st.header("Cargar Lista de Empaque")
-    uploaded_packing_list = st.file_uploader("Sube tu archivo de Lista de Empaque (PDF)", type=["pdf"], key="packing_list")
+# Carga de Lista de Empaque (Packing List)
+st.header("Cargar Lista de Empaque")
+uploaded_packing_list = st.file_uploader("Sube tu archivo de Lista de Empaque (PDF)", type=["pdf"], key="packing_list")
 
     # Botón para iniciar la extracción y procesamiento de OCR
     if st.button("Iniciar procesamiento de OCR"):
@@ -581,13 +579,3 @@ elif selected_option == "Comparación de Documentos":
         else:
             st.warning("No se extrajeron datos de los documentos.")
             
-            
-#-------------------------------------------#            
-#if coordenadas_rut:
-    #st.subheader("Categorización de la Dirección")
-    #categoria = categorizar_zona(coordenadas_rut[0], coordenadas_rut[1])
-    #st.write(f"Categoría: {categoria}")
-    
-    # Obtener la imagen del mapa
-    #imagen_mapa = obtener_imagen_mapa(coordenadas_rut[0], coordenadas_rut[1])
-    #st.image(imagen_mapa, caption="Ubicación de la dirección RUT", use_column_width=True)
