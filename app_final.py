@@ -216,7 +216,7 @@ def get_json_template(document_type):
         return None
 
 # Interfaz de Streamlit con opciones de procesamiento
-st.title("Comparación de Documentos - Aduanas!!")
+st.title("Extracción de datos en documentos - Aduanas")
 
 # Carga de Bill of Lading
 st.header("Cargar Bill of Lading")
@@ -247,11 +247,11 @@ if st.button("Iniciar procesamiento de OCR"):
     # Mostrar los resultados de los documentos procesados
     if json_data:
         #st.write("Datos JSON extraídos de los documentos:")
-        display_extracted_data(json_data)
+        #display_extracted_data(json_data)
         # Mostrar el JSON completo
-        st.subheader("JSON generado:")
-        json_str = json.dumps(json_data, indent=4)
-        st.text_area("JSON:", json_str, height=300)
+        #st.subheader("JSON generado:")
+        #json_str = json.dumps(json_data, indent=4)
+        #st.text_area("JSON:", json_str, height=300)
         
         # Crear un archivo .zip con los JSON generados
         zip_filename = "documentos_procesados.zip"
