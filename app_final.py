@@ -6,12 +6,11 @@ from azure.cognitiveservices.vision.computervision.models import OperationStatus
 from msrest.authentication import CognitiveServicesCredentials
 from openai import AzureOpenAI
 import os
-import zipfile
 import re
 from datetime import datetime
 
 # Configurar las credenciales de Azure
-AZURE_ENDPOINT = "https://iacdemoaduanas.cognitiveservices.azure.com/"
+AZURE_ENDPOINT = "https://iacdemoaduanas.cognitiveservices.azure.com/"  # Cambia por tu endpoint real
 AZURE_KEY = "e44dceb20f40469291dd107c2689e556"  # Cambia por tu API Key real
 AZURE_OPENAI_ENDPOINT = "https://iac-demo-aduanas.openai.azure.com/"  # Coloca tu endpoint de Azure OpenAI
 AZURE_OPENAI_KEY = "e68adbe619e241f7bb9c9d25389743d2"  # Coloca tu clave de Azure OpenAI
@@ -53,6 +52,20 @@ def normalizar_fecha(fecha_str):
     # Si no se pudo interpretar la fecha
     return None
 
+# Función para comparar fechas
+def comparar_fechas(fecha_factura, fecha_empaque):
+    fecha_normalizada_factura = normalizar_fecha(fecha_factura)
+    fecha_normalizada_empaque = normalizar_fecha(fecha_empaque)
+
+    if fecha_normalizada_factura and fecha_normalizada_empaque:
+        if fecha_normalizada_factura == fecha_normalizada_empaque:
+            return "Las fechas coinciden."
+        else:
+            return f"Las fechas NO coinciden: Factura ({fecha_factura}) vs. Empaque ({fecha_empaque})"
+    else:
+        return "Una o ambas fechas son inválidas."
+
+
 # Función para extraer texto de PDF usando OCR de Azure
 async def ocr_with_azure(file_stream, client):
     """Extraer texto de un PDF usando Azure OCR."""
@@ -67,6 +80,7 @@ async def ocr_with_azure(file_stream, client):
         await asyncio.sleep(30)
 
     if read_result.status == OperationStatusCodes.succeeded:
+        st.write(f"Total de páginas procesadas: {len(read_result.analyze_result.read_results)}")
         extracted_text = ""
         for text_result in read_result.analyze_result.read_results:
             for line in text_result.lines:
@@ -88,7 +102,15 @@ def parse_as_json(text, json_template):
         {"role": "user", "content": (
             "Convert the following text into a JSON object that **must exactly match** the structure provided in the template:\n"
             f"{json_template}\n\n"
-            "Here is the text to convert:\n{text}\n"
+            "The JSON object must strictly adhere to this structure, including all keys and nested elements, even if the data in the text is incomplete. "
+            "For the 'goods' field, ensure that every item is represented, and include any relevant details such as product number, description, quantity, unit price, total price, country of origin, and batch number. "
+            "When interpreting quantities and prices, be aware that a format such as '1.000' may represent one unit, and should not be confused with '1,000.0'. "
+            "When you find values ​​in miles in the total value of an item you must be careful, many of these values ​​do not actually represent miles but hundreds, this is because there are companies that mix ',' and '.' without taking into account that they represent quantities such as 1.0 and not 1,000.0. For example the value '73,150.00', you must enter '73.150'"
+            "You must count the length of each field that you are going to add, If fields like 'terms_conditions' or 'additional_clauses' are longer than 300 characters, you should put this message instead of all of its characters: 'This section was cut due to its length. See the original document for the full text.'"
+            "Additionally, make sure to extract the total document value and fill in the 'grand_total' field. Look for keywords like 'Total Amount', 'Grand Total', 'Total Due', or other similar terms that indicate the total value of the document."
+            #"Where you find this value '73,150.00' put '73.150'"
+            "Use contextual information from the document to ensure quantities are accurately interpreted.\n"
+            f"Here is the text to convert:\n{text}\n"
             "Respond exclusively with the correctly formatted JSON object, nothing else."
         )}
     ]
@@ -112,10 +134,17 @@ def parse_as_json(text, json_template):
         st.error("No se obtuvo una respuesta válida del modelo.")
         return None
 
+# Función para mostrar datos específicos del JSON
+def display_extracted_data(json_data):
+    """Función para mostrar datos extraídos del JSON."""
+    if not json_data:
+        st.error("No hay datos JSON para mostrar.")
+        return
+    
 # Función para procesar los documentos (OCR y conversión a JSON)
-def process_documents(uploaded_files, document_type, json_data):
-    """Función para procesar múltiples documentos."""
-    for uploaded_file in uploaded_files:
+def process_document(uploaded_file, document_type, json_data):
+    """Función para procesar un documento específico."""
+    if uploaded_file:
         st.write(f"Procesando {document_type}: {uploaded_file.name}")
 
         # Extraer el texto del archivo usando OCR
@@ -125,12 +154,16 @@ def process_documents(uploaded_files, document_type, json_data):
             extracted_text = loop.run_until_complete(ocr_with_azure(uploaded_file, cv_client))
 
         if extracted_text:
+            #st.write(f"Texto extraído de {uploaded_file.name}:")
+            st.text(extracted_text)
+
             # Cargar la plantilla adecuada
             json_template = get_json_template(document_type)
             if json_template:
                 parsed_json = parse_as_json(extracted_text, json_template)
                 if parsed_json: 
                     json_data[uploaded_file.name] = parsed_json
+
 
 # Cargar la plantilla adecuada según el tipo de documento
 def get_json_template(document_type):
@@ -144,6 +177,10 @@ def get_json_template(document_type):
         template_path = os.path.join(templates_folder, "commercial_invoice.json")
     elif document_type == "Lista de Empaque":
         template_path = os.path.join(templates_folder, "packing_list.json")
+    elif document_type == "RUT":
+        template_path = os.path.join(templates_folder, "RUT.json")
+    elif document_type == "Cámara de Comercio":
+        template_path = os.path.join(templates_folder, "camara_comercio.json")
     else:
         st.error(f"No se encontró una plantilla para el tipo de documento: {document_type}")
         return None
@@ -159,58 +196,48 @@ def get_json_template(document_type):
 # Interfaz de Streamlit con opciones de procesamiento
 st.title("Comparación de Documentos - Aduanas")
 
-# Carga de múltiples archivos para cada tipo de documento
+# Carga de Bill of Lading
 st.header("Cargar Bill of Lading")
-uploaded_bls = st.file_uploader("Sube tus archivos de Bill of Lading (PDF)", type=["pdf"], key="bl", accept_multiple_files=True)
+uploaded_bl = st.file_uploader("Sube tu archivo de Bill of Lading (PDF)", type=["pdf"], key="bl")
 
-st.header("Cargar Certificados de Origen")
-uploaded_cos = st.file_uploader("Sube tus archivos de Certificado de Origen (PDF)", type=["pdf"], key="co", accept_multiple_files=True)
+# Carga de Certificado de Origen
+st.header("Cargar Certificado de Origen")
+uploaded_co = st.file_uploader("Sube tu archivo de Certificado de Origen (PDF)", type=["pdf"], key="co")
 
-st.header("Cargar Facturas")
-uploaded_invoices = st.file_uploader("Sube tus archivos de Factura (PDF)", type=["pdf"], key="invoice", accept_multiple_files=True)
+# Carga de Factura (Commercial Invoice)
+st.header("Cargar Factura")
+uploaded_invoice = st.file_uploader("Sube tu archivo de Factura (PDF)", type=["pdf"], key="invoice")
 
-st.header("Cargar Listas de Empaque")
-uploaded_packing_lists = st.file_uploader("Sube tus archivos de Lista de Empaque (PDF)", type=["pdf"], key="packing_list", accept_multiple_files=True)
+# Carga de Lista de Empaque (Packing List)
+st.header("Cargar Lista de Empaque")
+uploaded_packing_list = st.file_uploader("Sube tu archivo de Lista de Empaque (PDF)", type=["pdf"], key="packing_list")
 
 # Botón para iniciar la extracción y procesamiento de OCR
 if st.button("Iniciar procesamiento de OCR"):
     json_data = {}
 
-    # Procesar cada grupo de archivos si fueron subidos
-    if uploaded_bls:
-        process_documents(uploaded_bls, "Bill of Lading", json_data)
-    if uploaded_cos:
-        process_documents(uploaded_cos, "Certificado de Origen", json_data)
-    if uploaded_invoices:
-        process_documents(uploaded_invoices, "Factura", json_data)
-    if uploaded_packing_lists:
-        process_documents(uploaded_packing_lists, "Lista de Empaque", json_data)
+    # Procesar cada archivo si fue subido
+    process_document(uploaded_bl, "Bill of Lading", json_data)
+    process_document(uploaded_co, "Certificado de Origen", json_data)
+    process_document(uploaded_invoice, "Factura", json_data)
+    process_document(uploaded_packing_list, "Lista de Empaque", json_data)
 
     # Mostrar los resultados de los documentos procesados
     if json_data:
-        # Crear un archivo .zip con los JSON generados
-        zip_filename = "documentos_procesados.zip"
-        with zipfile.ZipFile(zip_filename, 'w') as zipf:
-            for filename, data in json_data.items():
-                json_str = json.dumps(data, indent=4)
-                json_path = f"{filename}.json"
-                with open(json_path, 'w', encoding='utf-8') as json_file:
-                    json_file.write(json_str)
-                zipf.write(json_path)
-                os.remove(json_path)  # Eliminar el archivo temporal
+        #st.write("Datos JSON extraídos de los documentos:")
+        display_extracted_data(json_data)
+        # Mostrar el JSON completo
+        st.subheader("JSON generado:")
+        json_str = json.dumps(json_data, indent=4)
+        st.text_area("JSON:", json_str, height=300)
 
-        # Botón para descargar el archivo .zip generado
-        with open(zip_filename, "rb") as f:
-            st.download_button(
-                label="Descargar JSONs comprimidos",
-                data=f,
-                file_name=zip_filename,
-                mime="application/zip"
-            )
-
-        # Eliminar el archivo .zip temporal
-        os.remove(zip_filename)
+        # Botón para descargar el JSON generado
+        st.download_button(
+            label="Descargar JSON",
+            data=json_str,
+            file_name="documentos_procesados.json",
+            mime="application/json"
+        )
     else:
         st.warning("No se extrajeron datos de los documentos.")
-
             
