@@ -241,8 +241,8 @@ def display_extracted_data(json_data):
     #streetCC = None
     
     
-    for doc_name, doc_data in json_data.items():
-        st.write(f"Documento: {doc_name}")
+    #for doc_name, doc_data in json_data.items():
+        #st.write(f"Documento: {doc_name}")
         
         #if "bill_of_lading_number" in doc_data:
             #st.write(f"Número de B/L: {doc_data.get('bill_of_lading_number', 'No disponible')}")
@@ -557,12 +557,12 @@ if st.button("Iniciar procesamiento de OCR"):
 
     # Mostrar los resultados de los documentos procesados
     if json_data:
-        st.write("Datos JSON extraídos de los documentos:")
+        #st.write("Datos JSON extraídos de los documentos:")
         display_extracted_data(json_data)
         # Mostrar el JSON completo
-        st.subheader("JSON completo generado:")
+        st.subheader("JSON generado:")
         json_str = json.dumps(json_data, indent=4)
-        st.text_area("JSON Generado:", json_str, height=300)
+        st.text_area("JSON:", json_str, height=300)
 
         # Botón para descargar el JSON generado
         st.download_button(
