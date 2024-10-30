@@ -239,10 +239,10 @@ if st.button("Iniciar procesamiento de OCR"):
     json_data = {}
 
     # Procesar cada archivo si fue subido
-    process_document(uploaded_bl, "Bill of Lading", json_data)
-    process_document(uploaded_co, "Certificado de Origen", json_data)
-    process_document(uploaded_invoice, "Factura", json_data)
-    process_document(uploaded_packing_list, "Lista de Empaque", json_data)
+    process_documents(uploaded_bl, "Bill of Lading", json_data)
+    process_documents(uploaded_co, "Certificado de Origen", json_data)
+    process_documents(uploaded_invoice, "Factura", json_data)
+    process_documents(uploaded_packing_list, "Lista de Empaque", json_data)
 
     # Mostrar los resultados de los documentos procesados
     if json_data:
