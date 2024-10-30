@@ -143,9 +143,32 @@ def display_extracted_data(json_data):
         return
     
 # Función para procesar los documentos (OCR y conversión a JSON)
-def process_document(uploaded_file, document_type, json_data):
-    """Función para procesar un documento específico."""
-    if uploaded_file:
+#def process_document(uploaded_file, document_type, json_data):
+    #"""Función para procesar un documento específico."""
+    #if uploaded_file:
+        #st.write(f"Procesando {document_type}: {uploaded_file.name}")
+
+        # Extraer el texto del archivo usando OCR
+        #with st.spinner(f"Extrayendo texto de {uploaded_file.name}..."):
+            #loop = asyncio.new_event_loop()
+            #asyncio.set_event_loop(loop)
+            #extracted_text = loop.run_until_complete(ocr_with_azure(uploaded_file, cv_client))
+
+        #if extracted_text:
+            #st.write(f"Texto extraído de {uploaded_file.name}:")
+            #st.text(extracted_text)
+
+            # Cargar la plantilla adecuada
+            #json_template = get_json_template(document_type)
+            #if json_template:
+                #parsed_json = parse_as_json(extracted_text, json_template)
+                #if parsed_json: 
+                    #json_data[uploaded_file.name] = parsed_json
+
+# Función para procesar los documentos (OCR y conversión a JSON)
+def process_documents(uploaded_files, document_type, json_data):
+    """Función para procesar múltiples documentos."""
+    for uploaded_file in uploaded_files:
         st.write(f"Procesando {document_type}: {uploaded_file.name}")
 
         # Extraer el texto del archivo usando OCR
@@ -155,15 +178,13 @@ def process_document(uploaded_file, document_type, json_data):
             extracted_text = loop.run_until_complete(ocr_with_azure(uploaded_file, cv_client))
 
         if extracted_text:
-            #st.write(f"Texto extraído de {uploaded_file.name}:")
-            st.text(extracted_text)
-
             # Cargar la plantilla adecuada
             json_template = get_json_template(document_type)
             if json_template:
                 parsed_json = parse_as_json(extracted_text, json_template)
                 if parsed_json: 
                     json_data[uploaded_file.name] = parsed_json
+
 
 
 # Cargar la plantilla adecuada según el tipo de documento
