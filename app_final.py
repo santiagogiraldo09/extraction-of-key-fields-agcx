@@ -6,6 +6,7 @@ from azure.cognitiveservices.vision.computervision.models import OperationStatus
 from msrest.authentication import CognitiveServicesCredentials
 from openai import AzureOpenAI
 import os
+import zipfile
 import re
 from datetime import datetime
 
@@ -194,23 +195,23 @@ def get_json_template(document_type):
         return None
 
 # Interfaz de Streamlit con opciones de procesamiento
-st.title("Comparación de Documentos - Aduanas")
+st.title("Comparación de Documentos - Aduanas!!")
 
 # Carga de Bill of Lading
 st.header("Cargar Bill of Lading")
-uploaded_bl = st.file_uploader("Sube tu archivo de Bill of Lading (PDF)", type=["pdf"], key="bl")
+uploaded_bl = st.file_uploader("Sube tu archivo de Bill of Lading (PDF)", type=["pdf"], key="bl", accept_multiple_files=True)
 
 # Carga de Certificado de Origen
 st.header("Cargar Certificado de Origen")
-uploaded_co = st.file_uploader("Sube tu archivo de Certificado de Origen (PDF)", type=["pdf"], key="co")
+uploaded_co = st.file_uploader("Sube tu archivo de Certificado de Origen (PDF)", type=["pdf"], key="co", accept_multiple_files=True)
 
 # Carga de Factura (Commercial Invoice)
 st.header("Cargar Factura")
-uploaded_invoice = st.file_uploader("Sube tu archivo de Factura (PDF)", type=["pdf"], key="invoice")
+uploaded_invoice = st.file_uploader("Sube tu archivo de Factura (PDF)", type=["pdf"], key="invoice", accept_multiple_files=True)
 
 # Carga de Lista de Empaque (Packing List)
 st.header("Cargar Lista de Empaque")
-uploaded_packing_list = st.file_uploader("Sube tu archivo de Lista de Empaque (PDF)", type=["pdf"], key="packing_list")
+uploaded_packing_list = st.file_uploader("Sube tu archivo de Lista de Empaque (PDF)", type=["pdf"], key="packing_list", accept_multiple_files=True)
 
 # Botón para iniciar la extracción y procesamiento de OCR
 if st.button("Iniciar procesamiento de OCR"):
@@ -230,14 +231,36 @@ if st.button("Iniciar procesamiento de OCR"):
         st.subheader("JSON generado:")
         json_str = json.dumps(json_data, indent=4)
         st.text_area("JSON:", json_str, height=300)
+        
+        # Crear un archivo .zip con los JSON generados
+        zip_filename = "documentos_procesados.zip"
+        with zipfile.ZipFile(zip_filename, 'w') as zipf:
+            for filename, data in json_data.items():
+                json_str = json.dumps(data, indent=4)
+                json_path = f"{filename}.json"
+                with open(json_path, 'w', encoding='utf-8') as json_file:
+                    json_file.write(json_str)
+                zipf.write(json_path)
+                os.remove(json_path)  # Eliminar el archivo temporal
 
         # Botón para descargar el JSON generado
-        st.download_button(
-            label="Descargar JSON",
-            data=json_str,
-            file_name="documentos_procesados.json",
-            mime="application/json"
-        )
+        # Botón para descargar el archivo .zip generado
+        with open(zip_filename, "rb") as f:
+            st.download_button(
+                label="Descargar JSONs comprimidos",
+                data=f,
+                file_name=zip_filename,
+                mime="application/zip"
+            )
+
+        # Eliminar el archivo .zip temporal
+        os.remove(zip_filename)
+        #st.download_button(
+            #label="Descargar JSON",
+            #data=json_str,
+            #file_name="documentos_procesados.json",
+            #mime="application/json"
+        #)
     else:
         st.warning("No se extrajeron datos de los documentos.")
             
