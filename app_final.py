@@ -126,6 +126,9 @@ def parse_as_json(text, json_template):
     if response.choices:
         parsed_json_text = response.choices[0].message.content.strip()
         cleaned_json_text = clean_json_text(parsed_json_text)
+        st.write("Respuesta del modelo:")
+        st.code(cleaned_json_text)
+
         try:
             return json.loads(cleaned_json_text)
         except json.JSONDecodeError as e:
