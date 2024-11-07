@@ -119,7 +119,8 @@ def parse_as_json(text, json_template):
     response = openai_client.chat.completions.create(
         model="Aduanas",
         messages=messages,
-        max_tokens=4096,
+        #max_tokens=4096,
+        max_tokens=10096,
         temperature=0
     )
 
