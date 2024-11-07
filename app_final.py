@@ -120,7 +120,7 @@ def parse_as_json(text, json_template):
         model="Aduanas",
         messages=messages,
         #max_tokens=4096,
-        max_tokens=10096,
+        max_tokens=9500,
         temperature=0
     )
 
